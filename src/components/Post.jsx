@@ -1,32 +1,39 @@
+import { format, formatDistanceToNow } from 'date-fns'
+
 import { Avatar } from './Avatar'
 import { Comment } from './Comment'
 import styles from './Post.module.css'
 
-export function Post() {
+export function Post({ author, publishedAt, content }) {
+    const publishedDateFormatted = format(publishedAt, "MMMM dd 'at' hh:mm aa")
+
+    const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
+        addSuffix: true
+    })
+
     return (
         <article className={styles.post}>
             <header>
                 <div className={styles.author}>
-                    <Avatar src='https://plus.unsplash.com/premium_photo-1677545183884-421157b2da02?q=50&w=500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' />
+                    <Avatar src={author.avatarUrl} />
                     <div className={styles.authoInfo}>
-                        <strong>John Doe</strong>
-                        <span>Worker</span>
+                        <strong>{ author.name }</strong>
+                        <span>{ author.role }</span>
                     </div>
                 </div>
 
-                <time title='November 28 at 10:20 PM' dateTime='2024-11-28 10:20:30'>
-                    Published at 1h
+                <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>
+                    {publishedDateRelativeToNow}
                 </time>
             </header>
             <div className={styles.content}>
-                <p>Lorem ipsum dolor sit amet.</p>
-
-                <p><a href='#'>ipsum.dolor/sit</a></p>
-
-                <p>
-                    <a href='#'>#lorem</a>{' '} 
-                    <a href=''>#ipsum</a>{' '}
-                </p>
+                {content.map(item => {
+                    if (item.type === 'paragraph') {
+                        return <p>{item.content}</p>
+                    } else if (item.type === 'url') {
+                        return <p><a href=''>{item.content}</a></p>
+                    }
+                })}
             </div>
 
             <form className={styles.commentForm}>
@@ -43,7 +50,6 @@ export function Post() {
             </form>
 
             <div className={styles.commentList}>
-                <Comment />
                 <Comment />
                 <Comment />
             </div>
